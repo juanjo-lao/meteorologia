@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import WeatherForm from './components/WeatherForm'
-import ForecastCard from './components/ForecastCard'
+import HourlyForecast from './components/HourlyForecast'
+import DailyForecast from './components/DailyForecast'
+import './index.css'
 
 function App() {
-  const [forecast, setForecast] = useState([])
+  const [hourly, setHourly] = useState([])
+  const [daily, setDaily] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -16,17 +19,28 @@ function App() {
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`
       )
-      if (!response.ok) {
-        throw new Error('Ciudad no encontrada')
-      }
+      if (!response.ok) throw new Error('Ciudad no encontrada')
       const data = await response.json()
 
-      // Filtramos para coger solo una predicción por día
-      const daily = data.list.filter(item => item.dt_txt.includes('12:00:00'))
+      // Filtrar datos de hoy (UTC)
+      const todayUTC = new Date().toISOString().slice(0, 10)
+      const hourlyData = data.list.filter(item => item.dt_txt.startsWith(todayUTC))
 
-      setForecast(daily)
+      // Agrupar por día
+      const dailyMap = {}
+      data.list.forEach(item => {
+        const date = item.dt_txt.split(' ')[0]
+        if (!dailyMap[date]) {
+          dailyMap[date] = item
+        }
+      })
+      const dailyData = Object.values(dailyMap).slice(1, 6) // saltamos hoy
+
+      setHourly(hourlyData)
+      setDaily(dailyData)
     } catch (err) {
-      setForecast([])
+      setHourly([])
+      setDaily([])
       setError(err.message)
     } finally {
       setLoading(false)
@@ -34,15 +48,24 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-sky-100 to-sky-300 p-4">
-      <h1 className="text-3xl font-bold mb-4 text-gray-800">🌤️ Pronóstico del Tiempo</h1>
+    <div className="app">
+      <h1>🌤️ Pronóstico del Tiempo</h1>
       <WeatherForm onSearch={fetchForecast} loading={loading} />
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-        {forecast.map(item => (
-          <ForecastCard key={item.dt} data={item} />
-        ))}
-      </div>
+      {error && <p className="error">{error}</p>}
+
+      {hourly.length > 0 && (
+        <>
+          <h2>Por horas de hoy</h2>
+          <HourlyForecast items={hourly} />
+        </>
+      )}
+
+      {daily.length > 0 && (
+        <>
+          <h2>Próximos días</h2>
+          <DailyForecast items={daily} />
+        </>
+      )}
     </div>
   )
 }
