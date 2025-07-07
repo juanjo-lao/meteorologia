@@ -1,33 +1,33 @@
-import Card from '@mui/joy/Card'
-import Typography from '@mui/joy/Typography'
+import { useState } from 'react'
 
-function WeatherCard({ weather, error }) {
+function WeatherForm({ onSearch, loading }) {
+  const [city, setCity] = useState('')
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (city.trim()) {
+      onSearch(city.trim())
+    }
+  }
+
   return (
-    <Card variant="outlined" sx={{ width: 320, textAlign: 'center', p: 2 }}>
-      <Typography level="h4" sx={{ mb: 1 }}>
-        Consulta el tiempo
-      </Typography>
-
-      {error && (
-        <Typography color="danger" sx={{ mt: 2 }}>
-          {error}
-        </Typography>
-      )}
-
-      {weather && (
-        <div style={{ marginTop: '1rem' }}>
-          <img 
-            src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} 
-            alt={weather.description} 
-            style={{ width: '80px', height: '80px' }}
-          />
-          <Typography textTransform="capitalize">{weather.description}</Typography>
-          <Typography>🌡️ Temperatura: {weather.temperature}°C</Typography>
-          <Typography>💨 Viento: {weather.windspeed} m/s</Typography>
-        </div>
-      )}
-    </Card>
+    <form onSubmit={handleSubmit} className="flex items-center">
+      <input
+        type="text"
+        placeholder="Introduce una ciudad"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        className="p-2 rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-400"
+      />
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-r disabled:bg-gray-400"
+      >
+        {loading ? 'Buscando...' : 'Buscar'}
+      </button>
+    </form>
   )
 }
 
-export default WeatherCard
+export default WeatherForm

@@ -1,48 +1,48 @@
 import { useState } from 'react'
 import WeatherForm from './components/WeatherForm'
-import WeatherCard from './components/WeatherCard'
-
-const API_KEY = import.meta.env.VITE_API_KEY
+import ForecastCard from './components/ForecastCard'
 
 function App() {
-  const [weather, setWeather] = useState(null)
+  const [forecast, setForecast] = useState([])
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
 
-  const fetchWeather = async (city) => {
+  const API_KEY = import.meta.env.VITE_API_KEY
+
+  const fetchForecast = async (city) => {
     setLoading(true)
-    setError(null)
-
+    setError('')
     try {
       const response = await fetch(
-        `/api/prediccion/especifica/municipio/diaria/{municipio}=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric&lang=es`
       )
+      if (!response.ok) {
+        throw new Error('Ciudad no encontrada')
+      }
       const data = await response.json()
 
-      if (data.cod !== 200) {
-        setError(data.message || 'No se pudo obtener el tiempo')
-        setWeather(null)
-      } else {
-        setWeather({
-          temperature: data.main.temp,
-          windspeed: data.wind.speed,
-          description: data.weather[0].description,
-          icon: data.weather[0].icon
-        })
-      }
+      // Filtramos para coger solo una predicción por día
+      const daily = data.list.filter(item => item.dt_txt.includes('12:00:00'))
+
+      setForecast(daily)
     } catch (err) {
-      console.error('Error al obtener el tiempo:', err)
-      setError('No se pudo obtener el tiempo')
-      setWeather(null)
+      setForecast([])
+      setError(err.message)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem' }}>
-      <WeatherForm onSearch={fetchWeather} loading={loading} />
-      <WeatherCard weather={weather} error={error} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-sky-100 to-sky-300 p-4">
+      <h1 className="text-3xl font-bold mb-4 text-gray-800">🌤️ Pronóstico del Tiempo</h1>
+      <WeatherForm onSearch={fetchForecast} loading={loading} />
+      {error && <p className="text-red-500">{error}</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+        {forecast.map(item => (
+          <ForecastCard key={item.dt} data={item} />
+        ))}
+      </div>
     </div>
   )
 }
