@@ -1,14 +1,29 @@
-# meteorologia
-App Meteorológica
-# React + Vite
+# 🌤️ App Meteorológica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para consultar el pronóstico del tiempo en tiempo real, desarrollada como proyecto personal para practicar consumo de **APIs REST**, **React** y despliegue en la nube.
 
-Currently, two official plugins are available:
+🔗 **Demo en producción:** [App Meteorológica en Vercel](https://meteorologia-nine.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Características
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Consulta de **pronóstico en tiempo real** mediante API REST.
+- Interfaz **responsive** y adaptada a móviles.
+- Despliegue en **Vercel** para acceso público.
+- Diseño moderno con **TailwindCSS**.
+- Implementación con **React + Next.js + TypeScript**.
+- Uso de **componentes reutilizables** y buenas prácticas en frontend.
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+- **React** + **Next.js** (Framework frontend)
+- **TypeScript** (Tipado estático)
+- **TailwindCSS** (Estilos y diseño responsive)
+- **REST API** de meteorología
+- **Vercel** (Despliegue en producción)
+- **Git & GitHub** (Control de versiones)
+
+---
